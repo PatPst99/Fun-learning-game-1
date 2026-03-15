@@ -1,335 +1,283 @@
-import React, { useState } from 'react';
-import { Play, ChevronRight, RotateCcw, CheckCircle2, XCircle, Trophy, Sparkles, Heart } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Learning Game 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap');
+        body { font-family: 'Kanit', sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
 
-const questionsData = [
-  {
-    id: 1,
-    question: 'อวัยวะส่วน "หัวใจ" ของกุ้ง ตั้งอยู่ที่บริเวณใดของร่างกาย?',
-    options: ['บริเวณหน้าอก', 'บริเวณหัว'],
-    correctAnswer: 'บริเวณหัว',
-    explanation: 'หัวใจของกุ้งตั้งอยู่ที่ส่วนหัว (Cephalothorax) ใกล้กับกระเพาะอาหาร เนื่องจากโครงสร้างร่างกายของสัตว์กลุ่มกุ้งกั้งปูไม่มีกระดูกสันหลัง จึงมีระบบไหลเวียนเลือดที่รวมศูนย์อยู่ในส่วนหัวเป็นหลัก'
-  },
-  {
-    id: 2,
-    question: 'ในช่วงเวลากลางวัน ท้องฟ้าบน "ดาวอังคาร" มักจะมองเห็นเป็นสีอะไร?',
-    options: ['สีแดงอมชมพู', 'สีน้ำเงินเข้ม'],
-    correctAnswer: 'สีแดงอมชมพู',
-    explanation: 'เนื่องจากชั้นบรรยากาศของดาวอังคารเต็มไปด้วยฝุ่นละอองที่เป็นสนิมเหล็ก ซึ่งสะท้อนแสงอาทิตย์ออกมาเป็นโทนสีแดง แต่สิ่งที่น่าทึ่งคือในช่วงพระอาทิตย์ตก ท้องฟ้าบนดาวอังคารจะกลายเป็นสีน้ำเงินแทน'
-  },
-  {
-    id: 3,
-    question: 'สัตว์ชนิดใดที่มี "ลายนิ้วมือ" คล้ายคลึงกับมนุษย์มากจนอาจทำให้เกิดความสับสนในที่เกิดเหตุได้?',
-    options: ['โคอาล่า', 'แรคคูน'],
-    correctAnswer: 'โคอาล่า',
-    explanation: 'โคอาล่ามีลายนิ้วมือ (Fingerprints) ที่มีรูปแบบเส้นนูนคล้ายกับมนุษย์อย่างน่าเหลือเชื่อ แม้จะส่องด้วยกล้องจุลทรรศน์ก็ยังแยกแยะได้ยาก ซึ่งเป็นวิวัฒนาการที่ช่วยในการยึดเกาะต้นไม้ได้อย่างมีประสิทธิภาพ'
-  },
-  {
-    id: 4,
-    question: 'อาหารชนิดใดที่นักโบราณคดีพบว่า "ไม่มีวันเสีย" แม้จะผ่านไปนานหลายพันปี?',
-    options: ['ข้าวสาร', 'น้ำผึ้ง'],
-    correctAnswer: 'น้ำผึ้ง',
-    explanation: 'น้ำผึ้งมีความชื้นต่ำมากและมีความเป็นกรดตามธรรมชาติ ทำให้ออกซิเจนเข้าถึงได้ยาก แบคทีเรียจึงไม่สามารถเจริญเติบโตได้ นักโบราณคดีเคยพบน้ำผึ้งในสุสานอียิปต์โบราณที่ยังคงทานได้อยู่'
-  },
-  {
-    id: 5,
-    question: 'ในแต่ละปีมีต้นไม้เกิดใหม่หลายล้านต้นจากการที่สัตว์ชนิดใด "ลืม" ที่ซ่อนอาหารของตัวเอง?',
-    options: ['กระรอก', 'ลิง'],
-    correctAnswer: 'กระรอก',
-    explanation: 'กระรอกมีพฤติกรรมเก็บสะสมลูกนัทและเมล็ดพืชไว้ใต้ดินเพื่อสำรองไว้กินในฤดูหนาว แต่พวกมันมักจะลืมตำแหน่งที่ฝังไว้บ่อยครั้ง เมล็ดพืชเหล่านั้นจึงเติบโตขึ้นกลายเป็นต้นไม้ใหญ่ ช่วยขยายพื้นที่ป่าโดยธรรมชาติ'
-  },
-  {
-    id: 6,
-    question: '"ปลาหมึกยักษ์" มีหัวใจทั้งหมดกี่ดวง?',
-    options: ['1 ดวง', '3 ดวง'],
-    correctAnswer: '3 ดวง',
-    explanation: 'ปลาหมึกมีหัวใจ 3 ดวง โดย 2 ดวงทำหน้าที่สูบฉีดเลือดไปที่เหงือก และดวงที่ 3 ทำหน้าที่สูบฉีดเลือดไปยังส่วนต่างๆ ของร่างกาย เพื่อรองรับการเคลื่อนที่อย่างรวดเร็วและการใช้พลังงานสูง'
-  },
-  {
-    id: 7,
-    question: 'ผลไม้ชนิดใดในทางพฤกษศาสตร์ถือว่าเป็น "เบอร์รี" (Berry)?',
-    options: ['สตรอว์เบอร์รี', 'กล้วย'],
-    correctAnswer: 'กล้วย',
-    explanation: 'ตามหลักพฤกษศาสตร์ เบอร์รีต้องเป็นผลที่เกิดจากดอกเดียวและมีเมล็ดอยู่ภายในเนื้อ ซึ่งกล้วยตรงตามนิยามนี้ ในขณะที่สตรอว์เบอร์รีถือเป็น "ผลกลุ่ม" (Aggregate fruit) เพราะมีเมล็ดอยู่ด้านนอก'
-  },
-  {
-    id: 8,
-    question: 'สัตว์ชนิดใดที่มีพฤติกรรม "สร้างมิตรภาพ" และมีเพื่อนสนิทในกลุ่ม?',
-    options: ['วัว', 'จระเข้'],
-    correctAnswer: 'วัว',
-    explanation: 'งานวิจัยพบว่าวัวเป็นสัตว์สังคมที่ฉลาด พวกมันจะมีเพื่อนสนิทและจะรู้สึกเครียดน้อยลงเมื่อได้อยู่ใกล้ชิดกับเพื่อนตัวโปรดในฝูง'
-  },
-  {
-    id: 9,
-    question: '"ผึ้ง" ใช้วิธีการใดในการสื่อสารเพื่อบอกพิกัดของแหล่งอาหารให้เพื่อนในฝูงทราบ?',
-    options: ['การส่งเสียงหึ่งในโทนที่ต่างกัน', 'การเต้นรำ (Waggle Dance)'],
-    correctAnswer: 'การเต้นรำ (Waggle Dance)',
-    explanation: 'ผึ้งสื่อสารด้วยการ "เต้นส่ายก้น" เป็นรูปตัวเลขแปด (8) โดยทิศทางและระยะเวลาของการเต้นจะระบุถึงองศาของดวงอาทิตย์และระยะทางจากรังไปถึงดอกไม้ได้อย่างแม่นยำ'
-  },
-  {
-    id: 10,
-    question: 'สัตว์ชนิดใดที่สามารถ "นอนหลับ" ได้นานต่อเนื่องถึง 3 ปี?',
-    options: ['หอยทาก', 'หมีขั้วโลก'],
-    correctAnswer: 'หอยทาก',
-    explanation: 'ในสภาวะที่อากาศแห้งแล้งเกินไปหรือขาดแคลนอาหาร หอยทากบางชนิดสามารถจำศีลโดยการนอนนิ่งๆ และปิดฝาเปลือกไว้ได้นานถึง 3 ปีเพื่อรอสภาพอากาศที่เหมาะสม'
-  },
-  {
-    id: 11,
-    question: 'ผิวหนังที่แท้จริงภายใต้ขนสีขาวของ "หมีขั้วโลก" คือสีอะไร?',
-    options: ['สีขาว', 'สีดำ'],
-    correctAnswer: 'สีดำ',
-    explanation: 'หมีขั้วโลกมีผิวหนังสีดำเพื่อช่วยในการดูดซับความร้อนจากแสงอาทิตย์ให้ได้มากที่สุด ส่วนขนที่เห็นเป็นสีขาวนั้น จริงๆ แล้วเป็นขนโปร่งแสงที่สะท้อนแสงจนดูเหมือนสีขาว'
-  },
-  {
-    id: 12,
-    question: '"ผีเสื้อ" ใช้ส่วนใดของร่างกายในการรับรสชาติอาหาร?',
-    options: ['ปีก', 'เท้า'],
-    correctAnswer: 'เท้า',
-    explanation: 'ผีเสื้อมีเซนเซอร์รับรสอยู่ที่เท้า เพื่อใช้ตรวจสอบว่าใบไม้ที่มันเกาะอยู่นั้นเป็นพืชชนิดที่เหมาะสมสำหรับวางไข่หรือมีสารอาหารที่ต้องการหรือไม่'
-  },
-  {
-    id: 13,
-    question: '"หัวใจ" ของสัตว์ชนิดใดที่มีขนาดใหญ่เท่ากับรถยนต์ขนาดเล็ก?',
-    options: ['ช้างแอฟริกา', 'ปลาวาฬสีน้ำเงิน'],
-    correctAnswer: 'ปลาวาฬสีน้ำเงิน',
-    explanation: 'ปลาวาฬสีน้ำเงินเป็นสัตว์ที่มีขนาดใหญ่ที่สุดในโลก หัวใจของมันอาจมีน้ำหนักถึง 180 กิโลกรัม และมีขนาดใหญ่พอๆ กับรถกอล์ฟหรือรถยนต์ขนาดเล็กเลยทีเดียว'
-  },
-  {
-    id: 14,
-    question: 'สัตว์ชนิดใดที่ไม่สามารถ "อาเจียน" ออกมาได้?',
-    options: ['สุนัข', 'หนู'],
-    correctAnswer: 'หนู',
-    explanation: 'หนูมีระบบทางเดินอาหารที่มีลิ้นกั้นที่แข็งแรงมากและไม่มีกลไกในสมองที่สั่งการให้เกิดการอาเจียน นี่คือเหตุผลว่าทำไมยาเบื่อหนูจึงได้ผลดีกับพวกมันเป็นพิเศษ'
-  },
-  {
-    id: 15,
-    question: 'ใน 1 วันบน "ดาวศุกร์" มีระยะเวลานานกว่า 1 ปีบนดาวศุกร์ จริงหรือไม่?',
-    options: ['จริง', 'ไม่จริง'],
-    correctAnswer: 'จริง',
-    explanation: 'ดาวศุกร์หมุนรอบตัวเองช้ามาก (1 รอบใช้เวลา 243 วันโลก) แต่โคจรรอบดวงอาทิตย์เร็วกว่า (1 รอบใช้เวลา 225 วันโลก) ทำให้ 1 วันบนดาวศุกร์ยาวนานกว่า 1 ปีของตัวมันเอง'
-  },
-  {
-    id: 16,
-    question: '"หอไอเฟล" สามารถมีความสูงเพิ่มขึ้นได้ในช่วงฤดูร้อน จริงหรือไม่?',
-    options: ['จริง', 'ไม่จริง'],
-    correctAnswer: 'จริง',
-    explanation: 'เนื่องจากโครงสร้างหลักของหอไอเฟลทำจากเหล็ก เมื่อได้รับความร้อนจากแสงแดดในฤดูร้อน เหล็กจะเกิดการขยายตัวทางความร้อน ทำให้หอไอเฟลอาจสูงขึ้นได้ถึง 15 เซนติเมตร'
-  },
-  {
-    id: 17,
-    question: 'อวัยวะใดของร่างกายมนุษย์ที่ไม่เคยหยุดการเจริญเติบโตตลอดชีวิต?',
-    options: ['ดวงตา', 'จมูกและหู'],
-    correctAnswer: 'จมูกและหู',
-    explanation: 'ในขณะที่ส่วนอื่นๆ หยุดโตเมื่อพ้นช่วงวัยรุ่น แต่จมูกและหูซึ่งประกอบด้วยกระดูกอ่อนจะยังคงมีการเปลี่ยนแปลงและขยายขนาดขึ้นเล็กน้อยตามแรงโน้มถ่วงและอายุที่มากขึ้น'
-  },
-  {
-    id: 18,
-    question: 'สัตว์ชนิดใดที่ "ไม่มีวันตาย" ตามธรรมชาติ?',
-    options: ['แมงกะพรุนบางสายพันธุ์', 'เต่าทะเล'],
-    correctAnswer: 'แมงกะพรุนบางสายพันธุ์',
-    explanation: 'แมงกะพรุนสายพันธุ์ Turritopsis dohrnii สามารถย้อนวงจรชีวิตจากวัยเจริญพันธุ์กลับไปเป็นระยะตัวอ่อน (Polyp) ได้ใหม่เมื่อได้รับบาดเจ็บหรือป่วย จึงถูกเรียกว่าแมงกะพรุนอมตะ'
-  },
-  {
-    id: 19,
-    question: '"เสียงคำราม" ของสิงโต สามารถได้ยินไปไกลถึงระยะกี่กิโลเมตร?',
-    options: ['2 กิโลเมตร', '8 กิโลเมตร'],
-    correctAnswer: '8 กิโลเมตร',
-    explanation: 'เสียงคำรามของสิงโตตัวผู้มีความเข้มเสียงสูงมาก ซึ่งใช้ในการประกาศอาณาเขตและข่มขวัญศัตรู โดยในสภาพอากาศที่เหมาะสม เสียงนี้สามารถเดินทางไปได้ไกลถึง 8 กิโลเมตร'
-  },
-  {
-    id: 20,
-    question: 'สัตว์ชนิดใดที่มีเลือดเป็น "สีน้ำเงิน"?',
-    options: ['ม้าน้ำ', 'แมงดาทะเล'],
-    correctAnswer: 'แมงดาทะเล',
-    explanation: 'เลือดของแมงดาทะเลมีสารที่เรียกว่า "ฮีโมไซยานิน" (Hemocyanin) ซึ่งมีทองแดงเป็นองค์ประกอบ เมื่อรวมตัวกับออกซิเจนจะกลายเป็นสีน้ำเงิน ต่างจากมนุษย์ที่มีธาตุเหล็ก (ฮีโมโกลบิน) ซึ่งเป็นสีแดง'
-  }
-];
+    <script type="module">
+        import React, { useState } from 'https://esm.sh/react@18?dev';
+        import ReactDOM from 'https://esm.sh/react-dom@18/client?dev';
+        import { Play, ChevronRight, RotateCcw, CheckCircle2, XCircle, Trophy, Sparkles, Heart } from 'https://esm.sh/lucide-react';
 
-export default function App() {
-  const [gameState, setGameState] = useState('start'); // start, playing, end
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [score, setScore] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [showExplanation, setShowExplanation] = useState(false);
+        const questionsData = [
+            {
+                id: 1,
+                question: 'อวัยวะส่วน "หัวใจ" ของกุ้ง ตั้งอยู่ที่บริเวณใดของร่างกาย?',
+                options: ['บริเวณหน้าอก', 'บริเวณหัว'],
+                correctAnswer: 'บริเวณหัว',
+                explanation: 'หัวใจของกุ้งตั้งอยู่ที่ส่วนหัว (Cephalothorax) ใกล้กับกระเพาะอาหาร เนื่องจากโครงสร้างร่างกายของสัตว์กลุ่มกุ้งกั้งปูไม่มีกระดูกสันหลัง จึงมีระบบไหลเวียนเลือดที่รวมศูนย์อยู่ในส่วนหัวเป็นหลัก'
+            },
+            {
+                id: 2,
+                question: 'ในช่วงเวลากลางวัน ท้องฟ้าบน "ดาวอังคาร" มักจะมองเห็นเป็นสีอะไร?',
+                options: ['สีแดงอมชมพู', 'สีน้ำเงินเข้ม'],
+                correctAnswer: 'สีแดงอมชมพู',
+                explanation: 'เนื่องจากชั้นบรรยากาศของดาวอังคารเต็มไปด้วยฝุ่นละอองที่เป็นสนิมเหล็ก ซึ่งสะท้อนแสงอาทิตย์ออกมาเป็นโทนสีแดง แต่สิ่งที่น่าทึ่งคือในช่วงพระอาทิตย์ตก ท้องฟ้าบนดาวอังคารจะกลายเป็นสีน้ำเงินแทน'
+            },
+            {
+                id: 3,
+                question: 'สัตว์ชนิดใดที่มี "ลายนิ้วมือ" คล้ายคลึงกับมนุษย์มากจนอาจทำให้เกิดความสับสนในที่เกิดเหตุได้?',
+                options: ['โคอาล่า', 'แรคคูน'],
+                correctAnswer: 'โคอาล่า',
+                explanation: 'โคอาล่ามีลายนิ้วมือ (Fingerprints) ที่มีรูปแบบเส้นนูนคล้ายกับมนุษย์อย่างน่าเหลือเชื่อ แม้จะส่องด้วยกล้องจุลทรรศน์ก็ยังแยกแยะได้ยาก ซึ่งเป็นวิวัฒนาการที่ช่วยในการยึดเกาะต้นไม้ได้อย่างมีประสิทธิภาพ'
+            },
+            {
+                id: 4,
+                question: 'อาหารชนิดใดที่นักโบราณคดีพบว่า "ไม่มีวันเสีย" แม้จะผ่านไปนานหลายพันปี?',
+                options: ['ข้าวสาร', 'น้ำผึ้ง'],
+                correctAnswer: 'น้ำผึ้ง',
+                explanation: 'น้ำผึ้งมีความชื้นต่ำมากและมีความเป็นกรดตามธรรมชาติ ทำให้ออกซิเจนเข้าถึงได้ยาก แบคทีเรียจึงไม่สามารถเจริญเติบโตได้ นักโบราณคดีเคยพบน้ำผึ้งในสุสานอียิปต์โบราณที่ยังคงทานได้อยู่'
+            },
+            {
+                id: 5,
+                question: 'ในแต่ละปีมีต้นไม้เกิดใหม่หลายล้านต้นจากการที่สัตว์ชนิดใด "ลืม" ที่ซ่อนอาหารของตัวเอง?',
+                options: ['กระรอก', 'ลิง'],
+                correctAnswer: 'กระรอก',
+                explanation: 'กระรอกมีพฤติกรรมเก็บสะสมลูกนัทและเมล็ดพืชไว้ใต้ดินเพื่อสำรองไว้กินในฤดูหนาว แต่พวกมันมักจะลืมตำแหน่งที่ฝังไว้บ่อยครั้ง เมล็ดพืชเหล่านั้นจึงเติบโตขึ้นกลายเป็นต้นไม้ใหญ่ ช่วยขยายพื้นที่ป่าโดยธรรมชาติ'
+            },
+            {
+                id: 6,
+                question: '"ปลาหมึกยักษ์" มีหัวใจทั้งหมดกี่ดวง?',
+                options: ['1 ดวง', '3 ดวง'],
+                correctAnswer: '3 ดวง',
+                explanation: 'ปลาหมึกมีหัวใจ 3 ดวง โดย 2 ดวงทำหน้าที่สูบฉีดเลือดไปที่เหงือก และดวงที่ 3 ทำหน้าที่สูบฉีดเลือดไปยังส่วนต่างๆ ของร่างกาย เพื่อรองรับการเคลื่อนที่อย่างรวดเร็วและการใช้พลังงานสูง'
+            },
+            {
+                id: 7,
+                question: 'ผลไม้ชนิดใดในทางพฤกษศาสตร์ถือว่าเป็น "เบอร์รี" (Berry)?',
+                options: ['สตรอว์เบอร์รี', 'กล้วย'],
+                correctAnswer: 'กล้วย',
+                explanation: 'ตามหลักพฤกษศาสตร์ เบอร์รีต้องเป็นผลที่เกิดจากดอกเดียวและมีเมล็ดอยู่ภายในเนื้อ ซึ่งกล้วยตรงตามนิยามนี้ ในขณะที่สตรอว์เบอร์รีถือเป็น "ผลกลุ่ม" (Aggregate fruit) เพราะมีเมล็ดอยู่ด้านนอก'
+            },
+            {
+                id: 8,
+                question: 'สัตว์ชนิดใดที่มีพฤติกรรม "สร้างมิตรภาพ" และมีเพื่อนสนิทในกลุ่ม?',
+                options: ['วัว', 'จระเข้'],
+                correctAnswer: 'วัว',
+                explanation: 'งานวิจัยพบว่าวัวเป็นสัตว์สังคมที่ฉลาด พวกมันจะมีเพื่อนสนิทและจะรู้สึกเครียดน้อยลงเมื่อได้อยู่ใกล้ชิดกับเพื่อนตัวโปรดในฝูง'
+            },
+            {
+                id: 9,
+                question: '"ผึ้ง" ใช้วิธีการใดในการสื่อสารเพื่อบอกพิกัดของแหล่งอาหารให้เพื่อนในฝูงทราบ?',
+                options: ['การส่งเสียงหึ่งในโทนที่ต่างกัน', 'การเต้นรำ (Waggle Dance)'],
+                correctAnswer: 'การเต้นรำ (Waggle Dance)',
+                explanation: 'ผึ้งสื่อสารด้วยการ "เต้นส่ายก้น" เป็นรูปตัวเลขแปด (8) โดยทิศทางและระยะเวลาของการเต้นจะระบุถึงองศาของดวงอาทิตย์และระยะทางจากรังไปถึงดอกไม้ได้อย่างแม่นยำ'
+            },
+            {
+                id: 10,
+                question: 'สัตว์ชนิดใดที่สามารถ "นอนหลับ" ได้นานต่อเนื่องถึง 3 ปี?',
+                options: ['หอยทาก', 'หมีขั้วโลก'],
+                correctAnswer: 'หอยทาก',
+                explanation: 'ในสภาวะที่อากาศแห้งแล้งเกินไปหรือขาดแคลนอาหาร หอยทากบางชนิดสามารถจำศีลโดยการนอนนิ่งๆ และปิดฝาเปลือกไว้ได้นานถึง 3 ปีเพื่อรอสภาพอากาศที่เหมาะสม'
+            },
+            {
+                id: 11,
+                question: 'ผิวหนังที่แท้จริงภายใต้ขนสีขาวของ "หมีขั้วโลก" คือสีอะไร?',
+                options: ['สีขาว', 'สีดำ'],
+                correctAnswer: 'สีดำ',
+                explanation: 'หมีขั้วโลกมีผิวหนังสีดำเพื่อช่วยในการดูดซับความร้อนจากแสงอาทิตย์ให้ได้มากที่สุด ส่วนขนที่เห็นเป็นสีขาวนั้น จริงๆ แล้วเป็นขนโปร่งแสงที่สะท้อนแสงจนดูเหมือนสีขาว'
+            },
+            {
+                id: 12,
+                question: '"ผีเสื้อ" ใช้ส่วนใดของร่างกายในการรับรสชาติอาหาร?',
+                options: ['ปีก', 'เท้า'],
+                correctAnswer: 'เท้า',
+                explanation: 'ผีเสื้อมีเซนเซอร์รับรสอยู่ที่เท้า เพื่อใช้ตรวจสอบว่าใบไม้ที่มันเกาะอยู่นั้นเป็นพืชชนิดที่เหมาะสมสำหรับวางไข่หรือมีสารอาหารที่ต้องการหรือไม่'
+            },
+            {
+                id: 13,
+                question: '"หัวใจ" ของสัตว์ชนิดใดที่มีขนาดใหญ่เท่ากับรถยนต์ขนาดเล็ก?',
+                options: ['ช้างแอฟริกา', 'ปลาวาฬสีน้ำเงิน'],
+                correctAnswer: 'ปลาวาฬสีน้ำเงิน',
+                explanation: 'ปลาวาฬสีน้ำเงินเป็นสัตว์ที่มีขนาดใหญ่ที่สุดในโลก หัวใจของมันอาจมีน้ำหนักถึง 180 กิโลกรัม และมีขนาดใหญ่พอๆ กับรถกอล์ฟหรือรถยนต์ขนาดเล็กเลยทีเดียว'
+            },
+            {
+                id: 14,
+                question: 'สัตว์ชนิดใดที่ไม่สามารถ "อาเจียน" ออกมาได้?',
+                options: ['สุนัข', 'หนู'],
+                correctAnswer: 'หนู',
+                explanation: 'หนูมีระบบทางเดินอาหารที่มีลิ้นกั้นที่แข็งแรงมากและไม่มีกลไกในสมองที่สั่งการให้เกิดการอาเจียน นี่คือเหตุผลว่าทำไมยาเบื่อหนูจึงได้ผลดีกับพวกมันเป็นพิเศษ'
+            },
+            {
+                id: 15,
+                question: 'ใน 1 วันบน "ดาวศุกร์" มีระยะเวลานานกว่า 1 ปีบนดาวศุกร์ จริงหรือไม่?',
+                options: ['จริง', 'ไม่จริง'],
+                correctAnswer: 'จริง',
+                explanation: 'ดาวศุกร์หมุนรอบตัวเองช้ามาก (1 รอบใช้เวลา 243 วันโลก) แต่โคจรรอบดวงอาทิตย์เร็วกว่า (1 รอบใช้เวลา 225 วันโลก) ทำให้ 1 วันบนดาวศุกร์ยาวนานกว่า 1 ปีของตัวมันเอง'
+            },
+            {
+                id: 16,
+                question: '"หอไอเฟล" สามารถมีความสูงเพิ่มขึ้นได้ในช่วงฤดูร้อน จริงหรือไม่?',
+                options: ['จริง', 'ไม่จริง'],
+                correctAnswer: 'จริง',
+                explanation: 'เนื่องจากโครงสร้างหลักของหอไอเฟลทำจากเหล็ก เมื่อได้รับความร้อนจากแสงแดดในฤดูร้อน เหล็กจะเกิดการขยายตัวทางความร้อน ทำให้หอไอเฟลอาจสูงขึ้นได้ถึง 15 เซนติเมตร'
+            },
+            {
+                id: 17,
+                question: 'อวัยวะใดของร่างกายมนุษย์ที่ไม่เคยหยุดการเจริญเติบโตตลอดชีวิต?',
+                options: ['ดวงตา', 'จมูกและหู'],
+                correctAnswer: 'จมูกและหู',
+                explanation: 'ในขณะที่ส่วนอื่นๆ หยุดโตเมื่อพ้นช่วงวัยรุ่น แต่จมูกและหูซึ่งประกอบด้วยกระดูกอ่อนจะยังคงมีการเปลี่ยนแปลงและขยายขนาดขึ้นเล็กน้อยตามแรงโน้มถ่วงและอายุที่มากขึ้น'
+            },
+            {
+                id: 18,
+                question: 'สัตว์ชนิดใดที่ "ไม่มีวันตาย" ตามธรรมชาติ?',
+                options: ['แมงกะพรุนบางสายพันธุ์', 'เต่าทะเล'],
+                correctAnswer: 'แมงกะพรุนบางสายพันธุ์',
+                explanation: 'แมงกะพรุนสายพันธุ์ Turritopsis dohrnii สามารถย้อนวงจรชีวิตจากวัยเจริญพันธุ์กลับไปเป็นระยะตัวอ่อน (Polyp) ได้ใหม่เมื่อได้รับบาดเจ็บหรือป่วย จึงถูกเรียกว่าแมงกะพรุนอมตะ'
+            },
+            {
+                id: 19,
+                question: '"เสียงคำราม" ของสิงโต สามารถได้ยินไปไกลถึงระยะกี่กิโลเมตร?',
+                options: ['2 กิโลเมตร', '8 กิโลเมตร'],
+                correctAnswer: '8 กิโลเมตร',
+                explanation: 'เสียงคำรามของสิงโตตัวผู้มีความเข้มเสียงสูงมาก ซึ่งใช้ในการประกาศอาณาเขตและข่มขวัญศัตรู โดยในสภาพอากาศที่เหมาะสม เสียงนี้สามารถเดินทางไปได้ไกลถึง 8 กิโลเมตร'
+            },
+            {
+                id: 20,
+                question: 'สัตว์ชนิดใดที่มีเลือดเป็น "สีน้ำเงิน"?',
+                options: ['ม้าน้ำ', 'แมงดาทะเล'],
+                correctAnswer: 'แมงดาทะเล',
+                explanation: 'เลือดของแมงดาทะเลมีสารที่เรียกว่า "ฮีโมไซยานิน" (Hemocyanin) ซึ่งมีทองแดงเป็นองค์ประกอบ เมื่อรวมตัวกับออกซิเจนจะกลายเป็นสีน้ำเงิน ต่างจากมนุษย์ที่มีธาตุเหล็ก (ฮีโมโกลบิน) ซึ่งเป็นสีแดง'
+            }
+        ];
 
-  const startGame = () => {
-    setGameState('playing');
-    setCurrentQuestionIndex(0);
-    setScore(0);
-    setSelectedAnswer(null);
-    setShowExplanation(false);
-  };
+        function App() {
+            const [gameState, setGameState] = useState('start');
+            const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+            const [score, setScore] = useState(0);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [showExplanation, setShowExplanation] = useState(false);
 
-  const handleAnswerClick = (option) => {
-    if (showExplanation) return; // Prevent clicking after already answered
+            const startGame = () => {
+                setGameState('playing');
+                setCurrentQuestionIndex(0);
+                setScore(0);
+                setSelectedAnswer(null);
+                setShowExplanation(false);
+            };
 
-    setSelectedAnswer(option);
-    setShowExplanation(true);
+            const handleAnswerClick = (option) => {
+                if (showExplanation) return;
+                setSelectedAnswer(option);
+                setShowExplanation(true);
+                if (option === questionsData[currentQuestionIndex].correctAnswer) {
+                    setScore(score + 1);
+                }
+            };
 
-    if (option === questionsData[currentQuestionIndex].correctAnswer) {
-      setScore(score + 1);
-    }
-  };
+            const handleNextQuestion = () => {
+                if (currentQuestionIndex < questionsData.length - 1) {
+                    setCurrentQuestionIndex(currentQuestionIndex + 1);
+                    setSelectedAnswer(null);
+                    setShowExplanation(false);
+                } else {
+                    setGameState('end');
+                }
+            };
 
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < questionsData.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setSelectedAnswer(null);
-      setShowExplanation(false);
-    } else {
-      setGameState('end');
-    }
-  };
-
-  // 1. หน้าปก (Start Screen)
-  if (gameState === 'start') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 flex flex-col items-center justify-center p-4 font-sans text-gray-800">
-        <div className="bg-white/80 backdrop-blur-sm p-8 md:p-12 rounded-[3rem] shadow-xl text-center max-w-lg w-full transform transition-all hover:scale-[1.02]">
-          <div className="flex justify-center mb-6">
-            <Sparkles className="w-16 h-16 text-pink-400 animate-pulse" />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4 py-2">
-            ความรู้รอบตัว 1
-          </h1>
-          <p className="text-lg text-gray-600 mb-10">
-            มาทดสอบความรู้รอบตัวสนุกๆ 20 ข้อกันเถอะ!
-          </p>
-          <button
-            onClick={startGame}
-            className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-pink-400 border-none rounded-full cursor-pointer hover:bg-pink-500 hover:shadow-lg hover:-translate-y-1 active:translate-y-0"
-          >
-            <Play className="w-6 h-6 mr-2 fill-current" />
-            เริ่มเล่นเลย
-          </button>
-        </div>
-        <div className="mt-12 flex items-center gap-2 text-gray-500 font-medium tracking-wide">
-          <Heart className="w-4 h-4 text-pink-400 fill-current" />
-          <span>Made by Pat</span>
-        </div>
-      </div>
-    );
-  }
-
-  // 3. หน้าสรุปคะแนน (End Screen)
-  if (gameState === 'end') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 flex flex-col items-center justify-center p-4 font-sans text-gray-800">
-        <div className="bg-white/90 backdrop-blur-md p-8 md:p-12 rounded-[3rem] shadow-xl text-center max-w-lg w-full">
-          <div className="flex justify-center mb-6">
-            <Trophy className="w-20 h-20 text-yellow-400 drop-shadow-md animate-bounce" />
-          </div>
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">จบเกมแล้ว!</h2>
-          <p className="text-gray-600 mb-6">คุณทำได้ยอดเยี่ยมมาก นี่คือคะแนนของคุณ</p>
-          
-          <div className="bg-gradient-to-r from-pink-50 to-blue-50 rounded-3xl p-6 mb-8 border border-white shadow-inner">
-            <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">
-              {score} <span className="text-3xl text-gray-400 font-bold">/ 20</span>
-            </div>
-          </div>
-
-          <button
-            onClick={startGame}
-            className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-violet-400 border-none rounded-full cursor-pointer hover:bg-violet-500 hover:shadow-lg hover:-translate-y-1"
-          >
-            <RotateCcw className="w-6 h-6 mr-2" />
-            เล่นอีกครั้ง
-          </button>
-        </div>
-        <div className="mt-8 flex items-center gap-2 text-gray-500 font-medium">
-          <Heart className="w-4 h-4 text-pink-400 fill-current" />
-          <span>Made by Pat</span>
-        </div>
-      </div>
-    );
-  }
-
-  // 2. หน้าเล่นเกม (Quiz Screen)
-  const currentQuestion = questionsData[currentQuestionIndex];
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 flex flex-col items-center justify-center p-4 sm:p-6 font-sans text-gray-800">
-      
-      {/* Progress Bar */}
-      <div className="max-w-2xl w-full mb-6 flex items-center justify-between px-2">
-        <span className="text-sm font-bold text-violet-500 bg-violet-100 px-3 py-1 rounded-full">
-          ข้อที่ {currentQuestionIndex + 1} / 20
-        </span>
-        <span className="text-sm font-bold text-pink-500 bg-pink-100 px-3 py-1 rounded-full">
-          คะแนน: {score}
-        </span>
-      </div>
-
-      <div className="bg-white shadow-xl rounded-[2rem] p-6 sm:p-10 max-w-2xl w-full transition-all">
-        {/* Question */}
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-8 leading-relaxed">
-          {currentQuestion.question}
-        </h2>
-
-        {/* Options */}
-        <div className="space-y-4 mb-8">
-          {currentQuestion.options.map((option, index) => {
-            
-            // Logic for styling options based on state
-            let buttonStateClass = "bg-gray-50 text-gray-700 hover:bg-pink-50 hover:border-pink-200 border-gray-100";
-            
-            if (showExplanation) {
-              if (option === currentQuestion.correctAnswer) {
-                // Correct answer styling
-                buttonStateClass = "bg-green-100 border-green-400 text-green-800 shadow-sm";
-              } else if (option === selectedAnswer) {
-                // Wrong answer selected styling
-                buttonStateClass = "bg-red-100 border-red-300 text-red-800";
-              } else {
-                // Unselected other answer
-                buttonStateClass = "bg-gray-50 text-gray-400 border-gray-100 opacity-60";
-              }
+            if (gameState === 'start') {
+                return React.createElement('div', { className: "min-h-screen bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 flex flex-col items-center justify-center p-4 text-gray-800" },
+                    React.createElement('div', { className: "bg-white/80 backdrop-blur-sm p-8 md:p-12 rounded-[3rem] shadow-xl text-center max-w-lg w-full transform transition-all hover:scale-[1.02]" },
+                        React.createElement('div', { className: "flex justify-center mb-6" }, React.createElement(Sparkles, { className: "w-16 h-16 text-pink-400 animate-pulse" })),
+                        React.createElement('h1', { className: "text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-4 py-2" }, "ความรู้รอบตัว 1"),
+                        React.createElement('p', { className: "text-lg text-gray-600 mb-10" }, "มาทดสอบความรู้รอบตัวสนุกๆ 20 ข้อกันเถอะ!"),
+                        React.createElement('button', { onClick: startGame, className: "group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-pink-400 border-none rounded-full cursor-pointer hover:bg-pink-500 hover:shadow-lg hover:-translate-y-1 active:translate-y-0" },
+                            React.createElement(Play, { className: "w-6 h-6 mr-2 fill-current" }), "เริ่มเล่นเลย"
+                        )
+                    ),
+                    React.createElement('div', { className: "mt-12 flex items-center gap-2 text-gray-500 font-medium tracking-wide" },
+                        React.createElement(Heart, { className: "w-4 h-4 text-pink-400 fill-current" }), React.createElement('span', null, "Made by Pat")
+                    )
+                );
             }
 
-            return (
-              <button
-                key={index}
-                onClick={() => handleAnswerClick(option)}
-                disabled={showExplanation}
-                className={`w-full text-left p-5 rounded-2xl border-2 transition-all duration-200 text-lg font-medium flex items-center justify-between ${buttonStateClass} ${!showExplanation && 'cursor-pointer hover:shadow-md hover:-translate-y-0.5'}`}
-              >
-                <span>{option}</span>
-                {showExplanation && option === currentQuestion.correctAnswer && (
-                  <CheckCircle2 className="w-6 h-6 text-green-600 shrink-0" />
-                )}
-                {showExplanation && option === selectedAnswer && option !== currentQuestion.correctAnswer && (
-                  <XCircle className="w-6 h-6 text-red-500 shrink-0" />
-                )}
-              </button>
+            if (gameState === 'end') {
+                return React.createElement('div', { className: "min-h-screen bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 flex flex-col items-center justify-center p-4 text-gray-800" },
+                    React.createElement('div', { className: "bg-white/90 backdrop-blur-md p-8 md:p-12 rounded-[3rem] shadow-xl text-center max-w-lg w-full" },
+                        React.createElement('div', { className: "flex justify-center mb-6" }, React.createElement(Trophy, { className: "w-20 h-20 text-yellow-400 drop-shadow-md animate-bounce" })),
+                        React.createElement('h2', { className: "text-3xl font-bold text-gray-800 mb-2" }, "จบเกมแล้ว!"),
+                        React.createElement('p', { className: "text-gray-600 mb-6" }, "คุณทำได้ยอดเยี่ยมมาก นี่คือคะแนนของคุณ"),
+                        React.createElement('div', { className: "bg-gradient-to-r from-pink-50 to-blue-50 rounded-3xl p-6 mb-8 border border-white shadow-inner" },
+                            React.createElement('div', { className: "text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500" }, `${score} `, React.createElement('span', { className: "text-3xl text-gray-400 font-bold" }, "/ 20"))
+                        ),
+                        React.createElement('button', { onClick: startGame, className: "inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-violet-400 border-none rounded-full cursor-pointer hover:bg-violet-500 hover:shadow-lg hover:-translate-y-1" },
+                            React.createElement(RotateCcw, { className: "w-6 h-6 mr-2" }), "เล่นอีกครั้ง"
+                        )
+                    )
+                );
+            }
+
+            const currentQuestion = questionsData[currentQuestionIndex];
+            return React.createElement('div', { className: "min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 flex flex-col items-center justify-center p-4 sm:p-6 text-gray-800" },
+                React.createElement('div', { className: "max-w-2xl w-full mb-6 flex items-center justify-between px-2" },
+                    React.createElement('span', { className: "text-sm font-bold text-violet-500 bg-violet-100 px-3 py-1 rounded-full" }, `ข้อที่ ${currentQuestionIndex + 1} / 20`),
+                    React.createElement('span', { className: "text-sm font-bold text-pink-500 bg-pink-100 px-3 py-1 rounded-full" }, `คะแนน: ${score}`)
+                ),
+                React.createElement('div', { className: "bg-white shadow-xl rounded-[2rem] p-6 sm:p-10 max-w-2xl w-full transition-all" },
+                    React.createElement('h2', { className: "text-xl sm:text-2xl font-bold text-gray-800 mb-8 leading-relaxed" }, currentQuestion.question),
+                    React.createElement('div', { className: "space-y-4 mb-8" },
+                        currentQuestion.options.map((option, index) => {
+                            let buttonStyle = "bg-gray-50 text-gray-700 hover:bg-pink-50 hover:border-pink-200 border-gray-100";
+                            if (showExplanation) {
+                                if (option === currentQuestion.correctAnswer) buttonStyle = "bg-green-100 border-green-400 text-green-800 shadow-sm";
+                                else if (option === selectedAnswer) buttonStyle = "bg-red-100 border-red-300 text-red-800";
+                                else buttonStyle = "bg-gray-50 text-gray-400 border-gray-100 opacity-60";
+                            }
+                            return React.createElement('button', {
+                                key: index,
+                                onClick: () => handleAnswerClick(option),
+                                disabled: showExplanation,
+                                className: `w-full text-left p-5 rounded-2xl border-2 transition-all duration-200 text-lg font-medium flex items-center justify-between ${buttonStyle} ${!showExplanation && 'cursor-pointer hover:shadow-md hover:-translate-y-0.5'}`
+                            },
+                                React.createElement('span', null, option),
+                                showExplanation && option === currentQuestion.correctAnswer && React.createElement(CheckCircle2, { className: "w-6 h-6 text-green-600 shrink-0" }),
+                                showExplanation && option === selectedAnswer && option !== currentQuestion.correctAnswer && React.createElement(XCircle, { className: "w-6 h-6 text-red-500 shrink-0" })
+                            );
+                        })
+                    ),
+                    showExplanation && React.createElement('div', { className: "animate-in fade-in slide-in-from-bottom-4 duration-500" },
+                        React.createElement('div', { className: `p-6 rounded-2xl mb-8 ${selectedAnswer === currentQuestion.correctAnswer ? 'bg-green-50 border border-green-100' : 'bg-orange-50 border border-orange-100'}` },
+                            React.createElement('h3', { className: `font-bold text-lg mb-2 flex items-center gap-2 ${selectedAnswer === currentQuestion.correctAnswer ? 'text-green-700' : 'text-orange-700'}` },
+                                selectedAnswer === currentQuestion.correctAnswer ? '🎉 ถูกต้องเก่งมาก!' : '😅 พลาดไปนิดเดียว!'
+                            ),
+                            React.createElement('p', { className: "text-gray-700 leading-relaxed" },
+                                React.createElement('strong', { className: "text-violet-600 block mb-1" }, `เฉลย: ${currentQuestion.correctAnswer}`),
+                                currentQuestion.explanation
+                            )
+                        ),
+                        React.createElement('div', { className: "flex justify-end" },
+                            React.createElement('button', { onClick: handleNextQuestion, className: "inline-flex items-center justify-center px-6 py-3 text-lg font-bold text-white transition-all duration-200 bg-blue-400 border-none rounded-full cursor-pointer hover:bg-blue-500 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0" },
+                                currentQuestionIndex < questionsData.length - 1 ? 'ข้อต่อไป' : 'ดูผลคะแนน',
+                                React.createElement(ChevronRight, { className: "w-5 h-5 ml-1" })
+                            )
+                        )
+                    )
+                )
             );
-          })}
-        </div>
+        }
 
-        {/* Explanation Area */}
-        {showExplanation && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className={`p-6 rounded-2xl mb-8 ${selectedAnswer === currentQuestion.correctAnswer ? 'bg-green-50 border border-green-100' : 'bg-orange-50 border border-orange-100'}`}>
-              <h3 className={`font-bold text-lg mb-2 flex items-center gap-2 ${selectedAnswer === currentQuestion.correctAnswer ? 'text-green-700' : 'text-orange-700'}`}>
-                {selectedAnswer === currentQuestion.correctAnswer ? '🎉 ถูกต้องเก่งมาก!' : '😅 พลาดไปนิดเดียว!'}
-              </h3>
-              <p className="text-gray-700 leading-relaxed">
-                <strong className="text-violet-600 block mb-1">เฉลย: {currentQuestion.correctAnswer}</strong>
-                {currentQuestion.explanation}
-              </p>
-            </div>
-
-            <div className="flex justify-end">
-              <button
-                onClick={handleNextQuestion}
-                className="inline-flex items-center justify-center px-6 py-3 text-lg font-bold text-white transition-all duration-200 bg-blue-400 border-none rounded-full cursor-pointer hover:bg-blue-500 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
-              >
-                {currentQuestionIndex < questionsData.length - 1 ? 'ข้อต่อไป' : 'ดูผลคะแนน'}
-                <ChevronRight className="w-5 h-5 ml-1" />
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(App));
+    </script>
+</body>
+</html>
